@@ -1,22 +1,67 @@
-import logo from './logo.svg';
+import { useState } from 'react';
+import { saveAs } from 'file-saver'
+
 import './App.css';
 
+
 function App() {
+
+  const [myValue, setMyValue] = useState('')
+
+  const createFile = () => {
+
+    const blob = new Blob([ myValue ], { type: 'text/plain;charset=utf-8' });
+    saveAs( blob, 'mi-archivo.txt' );
+  }
+
+  const readFile = ( e ) => {
+
+    const file = e.target.files[0];
+    if ( !file ) return;
+
+    const fileReader = new FileReader();
+
+    fileReader.readAsText( file );
+
+    fileReader.onload = () => {
+      console.log( fileReader.result );
+      setMyValue( fileReader.result );
+    }
+
+    fileReader.onerror = () => {
+      console.log( fileReader.error );
+    }
+
+  }
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+        
+        <h1>Leer y escribir archivos de texto </h1>
+        <textarea
+          cols="30"
+          rows="10"
+          placeholder="Ingrese lo que desea grabar"
+          value={ myValue }
+          onChange={ ( e ) => setMyValue( e.target.value ) }
+        ></textarea>
+
+        <br />
+        <input 
+          type="file"
+          multiple={ false }
+          onChange={ readFile }
+        />
+
+        <br />
+
+        <button
+          onClick={ createFile }
         >
-          Learn React
-        </a>
+          Guardar archivo
+        </button>
+
       </header>
     </div>
   );
